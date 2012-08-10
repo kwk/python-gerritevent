@@ -22,7 +22,7 @@ SOFTWARE.
 Listens to a gerrit stream of events and dispatches events to handlers.
 """
 import threading
-import simplejson
+import json
 
 
 class Dispatcher(threading.Thread):
@@ -79,7 +79,7 @@ class Dispatcher(threading.Thread):
             for line in stdout:
                 print(line)
                 try:
-                    event = simplejson.loads(line)
+                    event = json.loads(line)
                     for handler in self.__handlers:
                         mapping = {
                                   'patchset-created': handler.patchset_created,
