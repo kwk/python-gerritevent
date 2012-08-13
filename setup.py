@@ -1,5 +1,13 @@
 #!/usr/bin/env python
+import os
 from setuptools import setup, find_packages
+
+# Utility function to read the README file.
+# Used for the long_description.  It's nice, because now 1) we have a top level
+# README file and 2) it's easier to type in the README file than to put a raw
+# string in below ...
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
     name = "gerritevent",
@@ -7,6 +15,8 @@ setup(
     author = "Konrad Kleine",
     author_email = "kleine@gonicus.de",
     description = "Library to help implementing gerrit-to-X connectors.",
+    long_description = read('README.md'),
+    license = 'MIT',
     keywords = "gerrit api event",
     url = "https://github.com/kwk/python-gerritevent",
     classifiers = [
@@ -23,7 +33,7 @@ setup(
 
     include_package_data = False,
     zip_safe = True,
-    #install_requires = ["simplejson"],
+    install_requires = ["python-paramiko"]
 
     #entry_points = """
     #    [console_scripts]
