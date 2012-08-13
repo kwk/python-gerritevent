@@ -1,5 +1,5 @@
 """
-Copyright (c) 2012 Konrad Kleine
+Copyright (c) 2012 GONICUS GmbH
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,11 +37,11 @@ class Dispatcher(threading.Thread):
         Constructs a dispatcher
         """
         threading.Thread.__init__(self)
-        self.__config = config
-        self.__host = self.__config.get("gerrit", "host")
-        self.__port = self.__config.getint("gerrit", "port")
-        self.__user = self.__config.get("gerrit", "user")
-        self.__ssh_private_key = self.__config.get("gerrit", "ssh_private_key")
+        self.__host = config.get("gerrit", "host")
+        self.__port = config.getint("gerrit", "port")
+        self.__user = config.get("gerrit", "user")
+        self.__ssh_private_key = config.get("gerrit", "ssh_private_key")
+        self.__passphrase = config.get("gerrit", "passphrase")
         self.__handlers = handlers
 
     def run(self):
@@ -71,8 +71,8 @@ class Dispatcher(threading.Thread):
             client.connect(self.__host,
                            self.__port,
                            self.__user,
-                           # password='tester',  # TODO (kwk): replace test pw
                            key_filename=self.__ssh_private_key,
+                           password=self.__passphrase,
                            timeout=60)
             client.get_transport().set_keepalive(60)
             stdin, stdout, stderr = client.exec_command("gerrit stream-events")
