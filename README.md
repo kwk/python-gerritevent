@@ -50,3 +50,5 @@ In compact, extending gerritevent is as easy as this:
 [2]: http://code.google.com/p/gerrit/ "Gerrit"
 [3]: http://www.redmine.org/ "Redmine"
 [4]: https://github.com/kwk/python-gerritevent/blob/master/src/gerritevent/handler.py "Handler module"
+
+Build Status: [![Build Status](https://secure.travis-ci.org/kwk/python-gerritevent.png?branch=master)](http://travis-ci.org/kwk/python-gerritevent)
