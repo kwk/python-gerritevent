@@ -22,15 +22,18 @@ SOFTWARE.
 Forwards changes to code reviews to a Redmine issue tracking system.
 """
 import gerritevent
-import ConfigParser
-
+import sys
+if sys.version_info < (3, 0):
+    from ConfigParser import ConfigParser
+else:
+    from configparser import ConfigParser
 
 def main():
     """
     Reads a config an starts dispatching gerrit events.
     TODO (kwk): Add signal interrupt handling
     """
-    config = ConfigParser.ConfigParser()
+    config = ConfigParser()
     config.read("config.conf")
     handler = gerritevent.RedmineHandler(config)
     dispatcher = gerritevent.Dispatcher(config, handlers=[handler])
