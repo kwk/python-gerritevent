@@ -33,7 +33,7 @@ setup(
 
     include_package_data = False,
     zip_safe = True,
-    install_requires = ["python-paramiko"]
+    install_requires = ["paramiko"]
 
     #entry_points = """
     #    [console_scripts]
