@@ -1,0 +1,12 @@
+language: python
+python:
+ - "3.2"
+ - "2.7"
+ - "2.6"
+install:
+ # Install requirements 
+ - pip install nose
+ # Install this project
+ - pip install . --use-mirrors
+# Command to run tests
+script: nosetests 
