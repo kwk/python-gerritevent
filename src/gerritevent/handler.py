@@ -1,5 +1,5 @@
 """
-Copyright (c) 2012 Konrad Kleine
+Copyright (c) 2012 GONICUS GmbH
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -117,9 +117,8 @@ class RedmineHandler(Handler):
         Constructs a RedmineHandler object
         """
         Handler.__init__(self, config)
-        self.__config = config
-        self.__issue_url = self.__config.get("redmine", "issue_url")
-        self.__api_key = self.__config.get("redmine", "api_key")
+        self.__issue_url = config.get("redmine", "issue_url")
+        self.__api_key = config.get("redmine", "api_key")
 
     def __get_issue_ids(self, string):
         """
@@ -153,12 +152,12 @@ class RedmineHandler(Handler):
         """
         Translates gerrit comment event into Redmine issue comment.
         """
-        import simplejson
+        import json
         comment = str(event["comment"])
         author_name = str(event["author"]["name"])
         change_url = str(event["change"]["url"])
         change_subject = str(event["change"]["subject"])
-        comment = simplejson.dumps({
+        comment = json.dumps({
             "issue": {
               "notes":  self._prepare_comment_added_template(event)
             }
