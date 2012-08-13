@@ -22,8 +22,6 @@ SOFTWARE.
 Listens to a gerrit stream of events and dispatches events to handlers.
 """
 import threading
-import json
-
 
 class Dispatcher(threading.Thread):
     """
@@ -52,45 +50,67 @@ class Dispatcher(threading.Thread):
         """
         import time
         while True:
-            self.dispatch()
+            try:
+                client = self.connect_to_gerrit()
+                self.read_stream(client)
+                self.disconnect_from_gerrit(client)
+            except Exception, e:
+                print((str(self)) + " Unexpected: " + str(e))
             print((str(self)) + " sleeping and wrapping around")
             time.sleep(5)
 
-    def dispatch(self):
+    def connect_to_gerrit(self):
         """
-        Connects to gerrit event stream and dispatches events all handlers.
-        The handler in turn can do stuff like writing into a ticket system,
-        IRC, Jabber, Twitter, etc. You name it!
+        SSH connects to the Gerrit server, using the credentials from the ctor.
         """
         import paramiko
         client = paramiko.SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            print((str(self)) + " connecting to " + self.__host)
-            client.connect(self.__host,
-                           self.__port,
-                           self.__user,
-                           key_filename=self.__ssh_private_key,
-                           password=self.__passphrase,
-                           timeout=60)
-            client.get_transport().set_keepalive(60)
-            stdin, stdout, stderr = client.exec_command("gerrit stream-events")
-            for line in stdout:
-                print(line)
-                try:
-                    event = json.loads(line)
-                    for handler in self.__handlers:
-                        mapping = {
-                                  'patchset-created': handler.patchset_created,
-                                  'change-abandoned': handler.change_abandoned,
-                                  'change-restored': handler.change_restored,
-                                  'change-merged': handler.change_merged,
-                                  'comment-added': handler.comment_added,
-                                  'ref-updated': handler.ref_updated
-                        }[event["type"]](event)
-                except ValueError:
-                    pass
-            client.close()
-        except Exception, e:
-            print((str(self)) + " unexpected " + str(e))
+        print((str(self)) + " Connecting to " + self.__host)
+        client.connect(self.__host,
+                       self.__port,
+                       self.__user,
+                       key_filename=self.__ssh_private_key,
+                       password=self.__passphrase,
+                       timeout=60)
+        return client
+
+    def dispatch_event(self, event):
+        """
+        Informs all registered handlers by invoking the correct event callback.
+        The handler in turn can do stuff like writing into a ticket system,
+        IRC, Jabber, Twitter, etc. You name it!
+        """
+        for handler in self.__handlers:
+            mapping = {
+                      'patchset-created': handler.patchset_created,
+                      'change-abandoned': handler.change_abandoned,
+                      'change-restored': handler.change_restored,
+                      'change-merged': handler.change_merged,
+                      'comment-added': handler.comment_added,
+                      'ref-updated': handler.ref_updated
+            }[event["type"]](event)
+        
+
+    def read_stream(self, client):
+        """
+        Read lines from event stream and dispatch them as events to handlers.
+        """
+        import json
+        client.get_transport().set_keepalive(60)
+        stdin, stdout, stderr = client.exec_command("gerrit stream-events")
+        for line in stdout:
+            print(line)
+            try:
+                event = json.loads(line)
+                self.dispatch_event(event)
+            except ValueError:
+                pass
+
+    def disconnect_from_gerrit(self, client):
+        """
+        Closes the SSH connection to the Gerrit server.
+        """
+        print((str(self))+" Disconnecting from "+str(self.__host))
+        client.close()
