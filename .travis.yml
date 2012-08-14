@@ -7,6 +7,8 @@ python:
 install:
  # Install requirements 
  - pip install nose
+ - pip install mock
+ - pip install unittest2
  # Install this project
  - pip install . --use-mirrors
 # Command to run tests
