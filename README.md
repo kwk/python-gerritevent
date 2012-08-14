@@ -52,3 +52,14 @@ In compact, extending gerritevent is as easy as this:
 [4]: https://github.com/kwk/python-gerritevent/blob/master/src/gerritevent/handler.py "Handler module"
 
 Build Status: [![Build Status](https://secure.travis-ci.org/kwk/python-gerritevent.png?branch=master)](http://travis-ci.org/kwk/python-gerritevent)
+
+========================================================================
+
+Copyright (C) 2012 GONICUS GmbH
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License".
