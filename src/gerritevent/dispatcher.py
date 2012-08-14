@@ -12,7 +12,7 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -23,16 +23,18 @@ Listens to a gerrit stream of events and dispatches events to handlers.
 """
 import threading
 
+
 class Dispatcher(threading.Thread):
     """
-    Listens to a gerrit stream of events and dispatches events to handlers.
+    Listens to a Gerrit stream of events and dispatches events to handlers.
     All handler should implement at least a subset of the gerritevent.Handler
-    methods.
+    methods. If "endless" is True the dispatcher continuously re-connects to
+    the Gerrit server and parses requests when an error occured.
     This class was inspired by http://code.google.com/p/gerritbot/
     """
-    def __init__(self, config, handlers):
+    def __init__(self, config, handlers, endless=False):
         """
-        Constructs a dispatcher
+        Constructs a dispatcher.
         """
         threading.Thread.__init__(self)
         self.__host = config.get("gerrit", "host")
@@ -41,25 +43,30 @@ class Dispatcher(threading.Thread):
         self.__ssh_private_key = config.get("gerrit", "ssh_private_key")
         self.__passphrase = config.get("gerrit", "passphrase")
         self.__handlers = handlers
+        self.__endless = endless
 
     def run(self):
         """
         The main entry point when calling start() on the dispatcher object.
-        This method calls the dispatch() method over and over again, to
-        avoid the dispatcher to stop when an error occured.
+        If "self.__endless" is True this method continuously re-connects to
+        the Gerrit server and parses requests when an error occurred.
+        Configure the "endless" parameter with the constructor.
         """
         import time
         while True:
             try:
-                client = self.connect_to_gerrit()
-                self.read_stream(client)
-                self.disconnect_from_gerrit(client)
-            except Exception, e:
-                print((str(self)) + " Unexpected: " + str(e))
+                client = self._connect_to_gerrit()
+                self._read_stream(client)
+                self._disconnect_from_gerrit(client)
+            except Exception, ex:
+                print((str(self)) + " Unexpected: " + str(ex))
+            # End the loop if not in endless mode
+            if not self.__endless:
+                break
             print((str(self)) + " sleeping and wrapping around")
             time.sleep(5)
 
-    def connect_to_gerrit(self):
+    def _connect_to_gerrit(self):
         """
         SSH connects to the Gerrit server, using the credentials from the ctor.
         """
@@ -74,16 +81,17 @@ class Dispatcher(threading.Thread):
                        key_filename=self.__ssh_private_key,
                        password=self.__passphrase,
                        timeout=60)
+        client.get_transport().set_keepalive(60)
         return client
 
-    def dispatch_event(self, event):
+    def _dispatch_event(self, event):
         """
         Informs all registered handlers by invoking the correct event callback.
         The handler in turn can do stuff like writing into a ticket system,
         IRC, Jabber, Twitter, etc. You name it!
         """
         for handler in self.__handlers:
-            mapping = {
+            _mapping = {
                       'patchset-created': handler.patchset_created,
                       'change-abandoned': handler.change_abandoned,
                       'change-restored': handler.change_restored,
@@ -91,26 +99,24 @@ class Dispatcher(threading.Thread):
                       'comment-added': handler.comment_added,
                       'ref-updated': handler.ref_updated
             }[event["type"]](event)
-        
 
-    def read_stream(self, client):
+    def _read_stream(self, client):
         """
         Read lines from event stream and dispatch them as events to handlers.
         """
         import json
-        client.get_transport().set_keepalive(60)
-        stdin, stdout, stderr = client.exec_command("gerrit stream-events")
+        _stdin, stdout, _stderr = client.exec_command("gerrit stream-events")
         for line in stdout:
             print(line)
             try:
                 event = json.loads(line)
-                self.dispatch_event(event)
+                self._dispatch_event(event)
             except ValueError:
                 pass
 
-    def disconnect_from_gerrit(self, client):
+    def _disconnect_from_gerrit(self, client):
         """
         Closes the SSH connection to the Gerrit server.
         """
-        print((str(self))+" Disconnecting from "+str(self.__host))
+        print((str(self)) + " Disconnecting from " + str(self.__host))
         client.close()
