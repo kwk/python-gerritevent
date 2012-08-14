@@ -9,6 +9,7 @@ install:
  - pip install nose
  - pip install mock
  - pip install unittest2
+ - pip install httplib2
  # Install this project
  - pip install . --use-mirrors
 # Command to run tests
