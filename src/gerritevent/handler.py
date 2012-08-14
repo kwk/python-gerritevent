@@ -12,7 +12,7 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -135,7 +135,7 @@ class RedmineHandler(Handler):
         Adds the comment to the Redmine issue with ID issueID.
         """
         import httplib2
-        http = httplib2.Http()        
+        http = httplib2.Http()
         response, content = http.request(
              uri=self.__issue_url % int(issue_id),
              method='PUT',
@@ -153,9 +153,6 @@ class RedmineHandler(Handler):
         Translates gerrit comment event into Redmine issue comment.
         """
         import json
-        comment = str(event["comment"])
-        author_name = str(event["author"]["name"])
-        change_url = str(event["change"]["url"])
         change_subject = str(event["change"]["subject"])
         comment = json.dumps({
             "issue": {
