@@ -1,0 +1,35 @@
+Source: python-gerritevent
+Section: python
+Priority: optional
+Maintainer: Cajus Pollmeier <cajus@debian.org>
+Build-Depends: debhelper (>= 7.0.50~),
+               python (>= 2.6.6-3~),
+               python-setuptools,
+               python3-all,
+               python3-setuptools
+X-Python-Version: >= 2.6
+X-Python3-Version: >= 3.2
+Standards-Version: 3.9.3
+Homepage: https://github.com/kwk/python-gerritevent
+
+Package: python-gerritevent
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}
+Description: Gerrit-to-tracker gateway
+ This library connects the code review tool Gerrit in a loose
+ fashion to any number of issue trackers or messaging services. It does
+ this by parsing the live output of Gerrit events and dispatching them into
+ handlers.
+ .
+ This is the Python 2 version of the package.
+
+Package: python3-gerritevent
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: Gerrit-to-tracker gateway
+ This library connects the code review tool Gerrit in a loose
+ fashion to any number of issue trackers or messaging services. It does
+ this by parsing the live output of Gerrit events and dispatching them into
+ handlers.
+ .
+ This is the Python 3 version of the package.
