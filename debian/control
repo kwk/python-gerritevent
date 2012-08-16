@@ -23,13 +23,13 @@ Description: Gerrit-to-tracker gateway
  .
  This is the Python 2 version of the package.
 
-#Package: python3-gerritevent
-#Architecture: all
-#Depends: ${misc:Depends}, ${python3:Depends}
-#Description: Gerrit-to-tracker gateway
-# This library connects the code review tool Gerrit in a loose
-# fashion to any number of issue trackers or messaging services. It does
-# this by parsing the live output of Gerrit events and dispatching them into
-# handlers.
-# .
-# This is the Python 3 version of the package.
+Package: python3-gerritevent
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: Gerrit-to-tracker gateway
+ This library connects the code review tool Gerrit in a loose
+ fashion to any number of issue trackers or messaging services. It does
+ this by parsing the live output of Gerrit events and dispatching them into
+ handlers.
+ .
+ This is the Python 3 version of the package.
