@@ -16,7 +16,7 @@ setup(
     author_email = "kleine@gonicus.de",
     description = "Library to help implementing gerrit-to-X connectors.",
     long_description = read('README.md'),
-    license = 'MIT',
+    license = 'LGPL',
     keywords = "gerrit api event",
     url = "https://github.com/kwk/python-gerritevent",
     classifiers = [
