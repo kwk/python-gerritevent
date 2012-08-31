@@ -12,10 +12,12 @@ from gerritevent.gerrit_objects import GerritRefUpdate
 
 
 class Error(Exception):
+    """The basis for all error classes of this module."""
     pass
 
 
 class DecodeError(Error):
+    """Identifies an error when decoding any subclass of GerritEvent."""
     pass
 
 
